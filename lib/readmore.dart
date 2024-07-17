@@ -62,6 +62,7 @@ class ReadMoreText extends StatefulWidget {
     this.textHeightBehavior,
     this.selectionColor,
     this.callback,
+    this.addNewLine = false,
   })  : richData = null,
         richPreData = null,
         richPostData = null;
@@ -96,6 +97,7 @@ class ReadMoreText extends StatefulWidget {
     this.textHeightBehavior,
     this.selectionColor,
     this.callback,
+    this.addNewLine = false,
   })  : data = null,
         annotations = null,
         preDataText = null,
@@ -106,6 +108,8 @@ class ReadMoreText extends StatefulWidget {
   final ValueNotifier<bool>? isCollapsed;
 
   final OnTapCallback? callback;
+
+  final bool addNewLine;
 
   /// Used on TrimMode.Length
   final int trimLength;
@@ -290,6 +294,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
       style: isCollapsed ? defaultMoreStyle : defaultLessStyle,
       recognizer: _recognizer,
     );
+    final newLine = TextSpan(text: widget.addNewLine ? '\n\n' : '');
 
     final delimiter = TextSpan(
       text: isCollapsed
@@ -420,6 +425,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
                   children: [
                     if (isCollapsed) trimResult.textSpan else dataTextSpan,
                     delimiter,
+                    newLine,
                     link,
                   ],
                 );
@@ -443,6 +449,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
                   children: <TextSpan>[
                     effectiveDataTextSpan,
                     delimiter,
+                    newLine,
                     link,
                   ],
                 );
@@ -450,7 +457,6 @@ class ReadMoreTextState extends State<ReadMoreText> {
                 textSpan = dataTextSpan;
               }
             }
-            break;
           case TrimMode.Line:
             if (textPainter.didExceedMaxLines) {
               final effectiveDataTextSpan = isCollapsed
@@ -467,13 +473,13 @@ class ReadMoreTextState extends State<ReadMoreText> {
                   effectiveDataTextSpan,
                   if (linkLongerThanLine) const TextSpan(text: _kLineSeparator),
                   delimiter,
+                  newLine,
                   link,
                 ],
               );
             } else {
               textSpan = dataTextSpan;
             }
-            break;
         }
 
         return RichText(
@@ -585,7 +591,6 @@ class ReadMoreTextState extends State<ReadMoreText> {
 
         final nextSpan = TextSpan(
           text: newText,
-          children: null, // remove potential children
           style: textSpan.style,
           recognizer: textSpan.recognizer,
           mouseCursor: textSpan.mouseCursor,
